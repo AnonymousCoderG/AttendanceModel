@@ -8,4 +8,4 @@ numpy==1.23.5
 flask
 requests
 aiohttp
-gunicorn
+gunicorn==21.2.0
