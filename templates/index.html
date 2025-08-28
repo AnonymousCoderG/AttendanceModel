@@ -3,65 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live RFID Reader</title>
+    <title>Live Attendance System</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
-        .card { background-color: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); text-align: center; width: 350px; }
-        h1 { color: #333; margin-top: 0; }
-        #rfid-tag { font-size: 3rem; font-weight: bold; color: #007bff; margin: 20px 0; padding: 15px; border: 2px solid #ddd; border-radius: 8px; transition: color 0.3s, border-color 0.3s; }
-        #timestamp { font-size: 0.9rem; color: #888; }
-        .status-offline #rfid-tag { color: #dc3545; border-color: #dc3545; }
-        .status-na #rfid-tag { color: #6c757d; border-color: #6c757d; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            overflow: hidden;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        .video-container {
+            border: 2px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background-color: #000;
+        }
+        img {
+            display: block;
+            width: 100%;
+            max-width: 640px; /* Or your camera's width */
+        }
     </style>
 </head>
 <body>
-    <div class="card" id="status-card">
-        <h1>RFID Tag Status</h1>
-        <div id="rfid-tag">Loading...</div>
-        <p id="timestamp">Waiting for data...</p>
+    <h1>Live Attendance System</h1>
+    <div class="video-container">
+        <!-- The 'src' points to our Flask video feed route -->
+        <img src="{{ url_for('video_feed') }}" alt="Live Video Feed">
     </div>
-
-    <script>
-        // This function fetches the latest RFID data from our Flask server
-        async function updateRfidData() {
-            try {
-                // The browser requests data from our Flask API endpoint
-                const response = await fetch('/get_rfid_data');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-
-                // Get the elements to update
-                const tagElement = document.getElementById('rfid-tag');
-                const timestampElement = document.getElementById('timestamp');
-                const cardElement = document.getElementById('status-card');
-
-                // Update the text content
-                tagElement.textContent = data.rfid_tag || 'Error';
-                timestampElement.textContent = `Last update: ${data.timestamp}`;
-
-                // Update styling based on the tag value
-                cardElement.className = 'card'; // Reset class
-                if (data.rfid_tag === 'Offline' || data.rfid_tag === 'Error') {
-                    cardElement.classList.add('status-offline');
-                } else if (data.rfid_tag === 'N/A') {
-                    cardElement.classList.add('status-na');
-                }
-
-            } catch (error) {
-                console.error('Failed to fetch RFID data:', error);
-                document.getElementById('rfid-tag').textContent = 'Error';
-                document.getElementById('timestamp').textContent = 'Could not connect to server.';
-            }
-        }
-
-        // Run the function immediately when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            updateRfidData();
-            // Then, set it to run automatically every 3 seconds (3000 milliseconds)
-            setInterval(updateRfidData, 3000);
-        });
-    </script>
 </body>
 </html>
